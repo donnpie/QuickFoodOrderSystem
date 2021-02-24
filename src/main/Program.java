@@ -104,6 +104,8 @@ public class Program {
 		customerList.Add(cust2);
 		Customer cust3 = new Customer("Dirty Harry", "+27 82 999 4444", "ionlyaskonce@dontask.com", "14 Cherry Road", "North Beach", "Durban", 3);
 		customerList.Add(cust3);
+		Customer cust4 = new Customer("John Wick", "+27 82 111 2222", "donttouchmydog@guns.com", "15 Cherry Road", "Boksburg", "Johannesburg", 4);
+		customerList.Add(cust4);
 		//System.out.println(customerList.toString());
 		return customerList;
 	}
