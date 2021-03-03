@@ -5,7 +5,7 @@ public class Restaurant {
 	private String telNumber;
 	private Location location;
 	int id;
-	Menu menu = new Menu();
+	Menu menu = null;
 	
 	public Restaurant(String name, String telNumber, String location, int id) {
 		this.name = name;
@@ -13,8 +13,18 @@ public class Restaurant {
 		this.location = new Location(location);
 		this.id = id;
 	}
+	
+	public Restaurant(String name, String telNumber, Location location, int id) {
+		this.name = name;
+		this.telNumber =  telNumber;
+		this.location = location;
+		this.id = id;
+	}
 
 	public void Add(Meal meal) {
+		if (this.menu == null) {
+			this.menu = new Menu();
+		}
 		menu.Add(meal);
 	}
 	
@@ -24,6 +34,12 @@ public class Restaurant {
 	
 	public int GetId() {
 		return id;
+	}
+	
+	
+	public void SetMenu(Menu menu) {
+		this.menu = menu;
+		
 	}
 	
 	public Menu GetMenu() {

@@ -1,6 +1,7 @@
 package main;
 
 public class Driver {
+	private int id;
 	private String name;
 	private int numOfDeliveries;
 	private Location location;
@@ -15,6 +16,18 @@ public class Driver {
 		this.name = name;
 		this.numOfDeliveries = numOfDeliveries;
 		this.location = new Location(location);
+	}
+	
+	public Driver(String name, Location location, int numOfDeliveries, int id) {
+		this.name = name;
+		this.numOfDeliveries = numOfDeliveries;
+		this.location = location;
+		this.id = id;
+	}
+	
+	
+	public int GetId() {
+		return id;
 	}
 	
 	public String GetName() {

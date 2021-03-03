@@ -1,29 +1,13 @@
 package main;
+
 import java.util.Scanner;
 
-//Notes for L2 T11 first submission
-//1. Added functionality to output a textfile with customer names and order numbers, sorted by customer name
-//2. Added functionality to output a textfile with customer names and locations, sorted by customer location
-//3. Added functionality to overwrite drivers textfile with updated number of loads
-
 public class Program {
+	/**
+	 * Run the main program loop.
+	 */
 	public static void main(String[] args) {
-		//Define file paths and names
-		String driverFile = "../drivers.txt";
-		String orderFile = "../orders.txt";
-		String customerFile = "../customerLocations.txt";
-		
-		
-		//Create main list objs
-		CustomerList customerList = MakeCustomerList();
-		RestaurantList restaurantList = MakeRestaurantList();
-		DriverList driverList = IOHandler.MakeDriverList(driverFile);
-		
-
-		//DriverList driverList = IOHandler.MakeDriverList("./data/drivers.txt");
-		//System.out.println(driverList.toString());
 		char result;
-		OrderList orderList = new OrderList();
 		do {
 			DisplayWelcomeMessage();
 			
@@ -33,21 +17,29 @@ public class Program {
 				int option = IOHandler.GetNumberFromUser();
 				switch (option) {
 					case 1: 
-					validOptionSelected = true;
-					Order order = Order.CreateOrder(customerList, restaurantList, driverList);
-					//At this point the food order is not yet created
-					if (order!=null) {
-						//Take food order
-						order.TakeFoodOrder();
-						orderList.Add(order); //Add the order to the order list
-						System.out.println("Here is a summary of your order:");
-						System.out.println(order.toString());
-						//Write invoice text to file
-						IOHandler.WriteToFile(order.toString(), "../invoice "+ order.GetOrderNumber()+".txt");						
-					} else {
-						System.out.println("Sorry, there are no drivers in this area, cannot process order.");
-					}
-					break;
+						validOptionSelected = true;
+						CreateNewOrder();
+						break;
+					case 2: 
+						validOptionSelected = true;
+						FindCustomer();
+						break;
+					case 3: 
+						validOptionSelected = true;
+						AddNewCustomer();
+						break;
+					case 4: 
+						validOptionSelected = true;
+						UpdateCustomer();
+						break;
+					case 5: 
+						validOptionSelected = true;
+						FindIncompleteOrders();
+						break;
+					case 6: 
+						validOptionSelected = true;
+						FinaliseOrder();
+						break;
 				default:
 					validOptionSelected = false;
 				}
@@ -58,28 +50,36 @@ public class Program {
 			} while(result != 'y' && result != 'n');
 		} while(result == 'y');
 		
-		System.out.println("Here is a summary of all orders:");
-		orderList.SortByCustomerName();
-		System.out.println(orderList.nameAndNumToString()); //Should print names in alpha order followed by order numbers
-		IOHandler.WriteToFile(orderList.nameAndNumToString(), orderFile);	//Write names and nums to file
-		
-		System.out.println("Here is a summary of customers by location (Includes customers with no orders):");
-		customerList.SortByCustomerLocation();
-		System.out.println(customerList.locationAndNameToString()); 
-		IOHandler.WriteToFile(customerList.locationAndNameToString(), customerFile);	//Write to file
-		
-		System.out.println("Here is a summary of drivers with updated loads:"); //Default sort order
-		System.out.println(driverList.toString()); 
-		IOHandler.WriteToFile(driverList.toString(), driverFile);	//Write to file
+		///TODO: change to data base queries
+//		System.out.println("Here is a summary of all orders:");
+//		orderList.SortByCustomerName();
+//		System.out.println(orderList.nameAndNumToString()); //Should print names in alpha order followed by order numbers
+//		IOHandler.WriteToFile(orderList.nameAndNumToString(), orderFile);	//Write names and nums to file
+//		
+//		System.out.println("Here is a summary of customers by location (Includes customers with no orders):");
+//		customerList.SortByCustomerLocation();
+//		System.out.println(customerList.locationAndNameToString()); 
+//		IOHandler.WriteToFile(customerList.locationAndNameToString(), customerFile);	//Write to file
+//		
+//		System.out.println("Here is a summary of drivers with updated loads:"); //Default sort order
+//		System.out.println(driverList.toString()); 
+//		IOHandler.WriteToFile(driverList.toString(), driverFile);	//Write to file
 		
 		System.out.println("Goodbye!");
 		
 	}//main
-	
+
+	/**
+	 * Display welcome message when program is started
+	 */
 	public static void DisplayWelcomeMessage() {
 		System.out.println("Welcome to the Quick Food Order System!");
 	}
 	
+	/**
+	 * Asks the user if he/she wants to do another transaction
+	 * @return 'y' if user wants to do another transaction, 'n' if not
+	 */
 	public static char DoAnotherTransaction() {
 		//	
 			Scanner s = new Scanner(System.in);
@@ -93,55 +93,185 @@ public class Program {
 			return 'k';
 	}
 
-	public static CustomerList MakeCustomerList() {
-		//Create some customer objects. Eventually this should be changed to a database query
-		CustomerList customerList = new CustomerList();
-		
-		Customer cust1 = new Customer("Jill Jack", "123 456 7890", "jilljack@yahoo.com", "12 Cherry Road", "Plumstead", "Cape Town", 1);
-		customerList.Add(cust1);
-		//System.out.println(cust1.toString());
-		Customer cust2 = new Customer("Harry Potter", "876 342 7328", "harry@magic.co.za", "13 Rivonia Road", "Sandton", "Johannesburg", 2);
-		customerList.Add(cust2);
-		Customer cust3 = new Customer("Dirty Harry", "+27 82 999 4444", "ionlyaskonce@dontask.com", "14 Cherry Road", "North Beach", "Durban", 3);
-		customerList.Add(cust3);
-		Customer cust4 = new Customer("John Wick", "+27 82 111 2222", "donttouchmydog@guns.com", "15 Cherry Road", "Boksburg", "Johannesburg", 4);
-		customerList.Add(cust4);
-		//System.out.println(customerList.toString());
-		return customerList;
-	}
-	
-	public static RestaurantList MakeRestaurantList() {
-		//Create some Meal objects. Eventually this should be changed to a database query
-		RestaurantList restaurantList = new RestaurantList();
-		
-		Restaurant rest1 = new Restaurant("Aesop's Pizza", "098 765 4321", "Cape Town", 1);
-		Restaurant rest2 = new Restaurant("Hero Steaks", "011 999 1111", "Johannesburg", 2);
-		Restaurant rest3 = new Restaurant("Junk Food", "031 567 4321", "Durban", 3);
-		
-		//Add to menu
-		Meal meal1 = new Meal("Pizza", 1, 55.80);
-		rest1.Add(meal1);
-		rest2.Add(meal1);
-		rest3.Add(meal1);
-		Meal meal2 = new Meal("Pasta", 2, 40.23);
-		rest1.Add(meal2);
-		rest2.Add(meal2);
-		rest3.Add(meal2);
-		Meal meal3 = new Meal("Steak", 3, 90.44);
-		rest1.Add(meal3);
-		rest2.Add(meal3);
-		rest3.Add(meal3);
-		
-		//Add restaurant to RestaurantList
-		restaurantList.Add(rest1);
-		restaurantList.Add(rest2);
-		restaurantList.Add(rest3);
-		
-		return restaurantList;	
-	}
-	
+	/**
+	 * Displays the main menu options
+	 */
 	public static void DisplayMainMenuOptions() {
 		System.out.println("Please select an option from the menu below by entering the corresponding number");
 		System.out.println("1. Create a new order");
+		System.out.println("2. Find existing customer");
+		System.out.println("3. Create new customer");
+		System.out.println("4. Update existing customer");
+		System.out.println("5. Find imcomplete orders");
+		System.out.println("6. Finalise order");
+	}
+	
+	/**
+	 * Gets the location id for a given location
+	 * @param location A string representing a location, eg Cape Town
+	 * @return Integer representing locationId
+	 */
+	private static int GetLocationId(String location) {
+		int locationId = IOHandler.GetLocationId(location);
+		if (locationId > 0) {
+			System.out.println("Location id found");
+		} else {
+			System.out.println("Error: Location id not found. Customer not added to database.");
+		}
+		return locationId;
+	}
+	
+	/**
+	 * Creates a new order and inserts the order into the database.
+	 */
+	public static void CreateNewOrder() {
+		
+		//Create main list objs
+		CustomerList customerList = IOHandler.MakeCustomerList();
+		RestaurantList restaurantList = IOHandler.MakeRestaurantList();
+		DriverList driverList = IOHandler.MakeDriverList();
+		OrderList orderList = new OrderList();
+		
+		Order order = Order.CreateOrder(customerList, restaurantList, driverList);
+		//At this point the food order is not yet created
+		if (order!=null) {
+			//Take food order
+			order.TakeFoodOrder();
+			orderList.Add(order); //Add the order to the order list
+			System.out.println("Here is a summary of your order:");
+			System.out.println(order.toString());
+			//Write invoice text to file
+			IOHandler.WriteToFile(order.toString(), "../invoice "+ order.GetOrderNumber()+".txt");						
+		} else {
+			System.out.println("Sorry, there are no drivers in this area, cannot process order.");
+		}
+	}
+	
+	/**
+	 * Returns the details of the specified customer
+	 */
+	private static void FindCustomer() {
+
+		//Ask user for customerId
+		System.out.println("Enter id of customer: ");
+		int id = IOHandler.GetNumberFromUser();
+		
+		//Find the customer and print current details
+		Customer cust = IOHandler.GetCustomerById(id);
+		System.out.println("Current details for this customer: ");
+		System.out.println(cust.toString());
+		
+	}
+	
+	/**
+	 * Create a new customer and to database
+	 */	
+	private static void AddNewCustomer() {
+
+		
+		//Get inputs from user
+		String name = new String();
+		String contactNumber = new String();
+		String email = new String();
+		String streetAddress = new String();
+		String suburb = new String();
+		String location = new String();
+
+		Scanner sc = new Scanner(System.in);
+		System.out.print("Enter name:");
+		name = sc.nextLine();
+		System.out.print("Enter contact number:");
+		contactNumber = sc.nextLine();
+		System.out.print("Enter email:");
+		email = sc.nextLine();
+		System.out.print("Enter street address:");
+		streetAddress = sc.nextLine();		
+		System.out.print("Enter suburb:");
+		suburb = sc.nextLine();	
+		System.out.print("Enter location:");
+		location = sc.nextLine();	
+			
+		System.out.println("name: " + name + ", tel number: " + contactNumber + ", email: " + email + ", street address: " + streetAddress + ", suburb: " + suburb + ", location: " + location);
+		System.out.println("");
+		
+		//Check if location is valid and get locationId
+		int locationId = GetLocationId(location);
+		
+		//Write to db
+		if (IOHandler.AddNewCustomer(name, contactNumber, email, streetAddress, suburb, locationId)) {
+			System.out.println("Customer successfully added to the database!");
+		} else {
+			System.out.println("Error: Customer was not added to the database");
+		}
+		
+	}
+
+	/**
+	 * Updates an exiting customer in the database
+	 * User is required to enter the id of the customer to be updated
+	 * User then specifies new details
+	 */
+	private static void UpdateCustomer() {
+
+		//Ask user for customerId of customer to be updated
+		System.out.println("Enter id of customer to be updated: ");
+		int id = IOHandler.GetNumberFromUser();
+		
+		//Find the customer and print current details
+		Customer cust = IOHandler.GetCustomerById(id);
+		System.out.println("Current details for this customer: ");
+		System.out.println(cust.toString());
+		
+		//ask user to enter new details
+		String name = new String();
+		String contactNumber = new String();
+		String email = new String();
+		String streetAddress = new String();
+		String suburb = new String();
+		String location = new String();
+
+		Scanner sc = new Scanner(System.in);
+		System.out.print("Enter name:");
+		name = sc.nextLine();
+		System.out.print("Enter contact number:");
+		contactNumber = sc.nextLine();
+		System.out.print("Enter email:");
+		email = sc.nextLine();
+		System.out.print("Enter street address:");
+		streetAddress = sc.nextLine();		
+		System.out.print("Enter suburb:");
+		suburb = sc.nextLine();	
+		System.out.print("Enter location:");
+		location = sc.nextLine();	
+			
+		System.out.println("name: " + name + ", tel number: " + contactNumber + ", email: " + email + ", street address: " + streetAddress + ", suburb: " + suburb + ", location: " + location);
+		System.out.println("");
+		
+		//Check if location is valid and get locationId
+		int locationId = GetLocationId(location);
+		
+		//Write new details to db
+		if (IOHandler.UpdateCustomer(id, name, contactNumber, email, streetAddress, suburb, locationId)) {
+			System.out.println("Customer successfully updated!");
+		} else {
+			System.out.println("Error: Customer was not updated");
+		}
+		
+	}
+	
+	/**
+	 * Find orders for which the completion status is 0 (incomplete)
+	 */
+	private static void FindIncompleteOrders() {
+		// TODO Auto-generated method stub
+		System.out.println("simulating FindIncompleteOrders...");
+	}
+	
+	/**
+	 * Sets the completion status to complete and sets the completion date to current date for given order
+	 */
+	private static void FinaliseOrder() {
+		// TODO Auto-generated method stub
+		System.out.println("simulating FinaliseOrder...");
 	}
 }//public class Program

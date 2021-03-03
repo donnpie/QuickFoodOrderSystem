@@ -9,7 +9,7 @@ public class Menu {
 		list.add(m);
 	}
 	
-	public Meal GetMealBy(int id) {
+	public Meal GetMealById(int id) {
 		//Find and returns meal by id
 		for (int i = 0; i < list.size(); i++) {
 			Meal m = list.get(i);
@@ -20,7 +20,17 @@ public class Menu {
 		return null;
 	}
 	
+	public int size() {
+		return list.size();
+	}
 	
+	public int GetId(int i) {
+		/**
+		 * Return the id for meal at index position i
+		 */
+		return list.get(i).GetId();
+	}
+		
 	public String toString() {
 		//returns a string representing all driver objects
 		String result = new String();

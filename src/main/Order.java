@@ -22,9 +22,17 @@ public class Order {
 		this.customer = c;
 	}
 	
+	public Customer GetCustomer() {
+		return this.customer;
+	}
+	
 	public void SetSpecialInstructions() {
 		System.out.println("Please specify any special instructions (Press enter if none):");
 		this.specialInstructions = IOHandler.GetNextLineFromUser();
+	}
+	
+	public String GetSpecialInstructions() {
+		return this.specialInstructions;
 	}
 	
 	public void SetRestaurant(Restaurant r) {
@@ -45,20 +53,38 @@ public class Order {
 		return driver;
 	}
 	
+
+	public MealList GetMealList() {
+		return this.mealList;
+	}
+	
 	
 	public static Order CreateOrder(CustomerList cList, RestaurantList rList, DriverList dList) {
 		//Create new order object, populate the members of the object and return it
 		Order o = new Order();
+		//User is asked to select customer and restaurant
 		int custId = MakeCustomerSelection(cList);
 		o.SetCustomer(cList.GetCustomerBy(custId));
 		int restId = MakeRestaurantSelection(rList);
 		o.SetRestaurant(rList.GetRestaurantBy(restId));
+		
+		//Driver is picked automatically
 		o.SetDriver(dList.PickDriverInAreaWithLowestNumberOfOrders(o.GetRestaurant()));
 		if (o.GetDriver() == null) {
+			System.out.println("Sorry, there is no driver available in that area, order cannot be completed");
 			return null;
 		}
-		o.SetOrderNumber(OrderList.GetNextOrderNumber()); 
 		o.SetSpecialInstructions();
+		
+		//Send order to db and get order number back
+		if (IOHandler.SendOrderToDB(o)) {
+			int orderNumber = IOHandler.GetLastOrderNumber();
+			o.SetOrderNumber(orderNumber);
+		} else {
+			System.out.println("Error: Order could not be sent to the database");
+			return null;
+		}
+															
 		return o;
 	}
 	
@@ -72,27 +98,25 @@ public class Order {
 	
 	
 	private static int MakeCustomerSelection(CustomerList cList) {
-		boolean validOptionSelected;
+		/**
+		 * Prompts user to select customer by entering a valid customerId
+		 */
+		boolean validOptionSelected = false;
+		int option = 0;
 		do {
 			DisplayCustomers(cList);
-			int option = IOHandler.GetNumberFromUser();
-			//NB: This code will have to be updated every time a new customer is added to the list
-			//Find a better solution
-			switch (option) {
-				case 1: 
-					//validOptionSelected = true;
-					return 1;				
-				case 2: 
-					//validOptionSelected = true;
-					return 2;			
-				case 3: 
-					//validOptionSelected = true;
-					return 3;				
-				default:
+			option = IOHandler.GetNumberFromUser();
+			
+			for (int i = 0; i < cList.size(); i++) {
+				if (option == cList.GetId(i)) {
+					validOptionSelected = true;
+					break;
+				} else { 
 					validOptionSelected = false;
+				}
 			}
 		} while (!validOptionSelected);
-		return 0;
+		return option;
 }
 	//This is duplicated code. Can be simplified by introducing an interface
 	private static void DisplayRestaurants(RestaurantList rList) {
@@ -101,82 +125,95 @@ public class Order {
 	}
 	
 	
-	//This is duplicated code. Can be simplified by introducing an interface
+	//TODO: This is duplicated code. Can be simplified by introducing an interface. Refactor
 	private static int MakeRestaurantSelection(RestaurantList rList) {
-		boolean validOptionSelected;
+		/**
+		 * Prompts user to select restaurant by entering a valid restaurantId
+		 */
+		boolean validOptionSelected = false;
+		int option = 0;
 		do {
 			DisplayRestaurants(rList);
-			int option = IOHandler.GetNumberFromUser();
-			//NB: This code will have to be updated every time a new customer is added to the list
-			//Find a better solution
-			switch (option) {
-				case 1: 
-					//validOptionSelected = true;
-					return 1;				
-				case 2: 
-					//validOptionSelected = true;
-					return 2;			
-				case 3: 
-					//validOptionSelected = true;
-					return 3;				
-				default:
+			option = IOHandler.GetNumberFromUser();
+			
+			for (int i = 0; i < rList.size(); i++) {
+				if (option == rList.GetId(i)) {
+					validOptionSelected = true;
+					break;
+				} else { 
 					validOptionSelected = false;
+				}
 			}
 		} while (!validOptionSelected);
-		return 0;
+		return option;
+	}
+	
+	private static int MakeMealSelection(Menu menu) {
+		/**
+		 * Prompts user to select item from menu by entering a valid restaurantId
+		 */
+		boolean validOptionSelected = false;
+		int option = 0;
+		do {
+			DisplayMenu(menu);
+			option = IOHandler.GetNumberFromUser();
+			
+			for (int i = 0; i < menu.size(); i++) {
+				if (option == menu.GetId(i)) {
+					validOptionSelected = true;
+					break;
+				} else { 
+					validOptionSelected = false;
+				}
+			}
+		} while (!validOptionSelected);
+		return option;
 	}
 	
 	public void TakeFoodOrder() {
+		/**
+		 * Take food order associated with this order
+		 */
+		if (this.restaurant.menu == null) {
+			IOHandler.MakeMenu(this);			
+		} else {
+			System.out.println("menu already exists");
+		}
 		char result;
 		MealList mList = new MealList();
 		do {
-			//DisplayFoodOrderMessage();
 			
-			boolean validOptionSelected;
-			do {
-				DisplayMenu(); 
-				int option = IOHandler.GetNumberFromUser();
-				MealLineItem mealLineItem = new MealLineItem();
-				switch (option) {
-					case 1: 
-						validOptionSelected = true;
-						mealLineItem.SetMeal(restaurant.GetMenu().GetMealBy(option));
-						System.out.println("How many would you like?");
-						mealLineItem.SetQuantity(IOHandler.GetNumberFromUser());
-						mList.Add(mealLineItem);
-						//System.out.println(mealLineItem.toString());
-						break;
-					case 2: 
-						validOptionSelected = true;
-						mealLineItem.SetMeal(restaurant.GetMenu().GetMealBy(option));
-						System.out.println("How many would you like?");
-						mealLineItem.SetQuantity(IOHandler.GetNumberFromUser());
-						mList.Add(mealLineItem);
-						break;
-					case 3: 
-						validOptionSelected = true;
-						mealLineItem.SetMeal(restaurant.GetMenu().GetMealBy(option));
-						System.out.println("How many would you like?");
-						mealLineItem.SetQuantity(IOHandler.GetNumberFromUser());
-						mList.Add(mealLineItem);
-						break;
-				default:
-					validOptionSelected = false;
-				}
-			} while (!validOptionSelected);
-			
+			int option = MakeMealSelection(this.restaurant.menu);
+			MealLineItem mealLineItem = new MealLineItem();
+			mealLineItem.SetMeal(restaurant.GetMenu().GetMealById(option));
+			System.out.println("How many would you like?");
+			mealLineItem.SetQuantity(IOHandler.GetNumberFromUser());
+			mList.Add(mealLineItem);
 			do {
 				result = OrderAnotherMeal();
 			} while(result != 'y' && result != 'n');
 		} while(result == 'y');
+		
+		//Bind meal list to order
 		this.mealList = mList;
+		
+		//Send food order to db
+		if (IOHandler.SendFoodOrderToDB(this)) {
+			System.out.println("Food order successfully sent to the database!");
+		} else {
+			System.out.println("Error: Food order could not be sent to the database");
+		}
+		
 		//System.out.println("Printing meal list:");
 		//System.out.println(this.mealList.toString());
+		
+		///For other functions - copy here
+		
 	}
 	
-	private void DisplayMenu() {
+	private static void DisplayMenu(Menu menu) {
 		System.out.println("Please select a meal from the list below by entering the corresponding number");
-		System.out.println(restaurant.menu.toString());
+		System.out.println(menu.toString());
 	}
 	
 	
@@ -270,6 +307,7 @@ public class Order {
 		result += "\n";
 		return result;
 	}
+
 
 	
 	

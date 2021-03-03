@@ -13,7 +13,7 @@ class MenuTests {
 	void GetMealBy_ShouldWork() {
 		Menu menu = new Menu();
 		menu.Add(new Meal("Meal1", 1, 50.00));
-		Meal m = menu.GetMealBy(1);
+		Meal m = menu.GetMealById(1);
 		
 		assertEquals(m.GetName(), "Meal1");
 		assertEquals(m.GetId(), 1);

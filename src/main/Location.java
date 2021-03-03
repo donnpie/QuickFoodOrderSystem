@@ -1,6 +1,7 @@
 package main;
 
 public class Location {
+	private int locationId;
 	private String location;
 	
 	public Location() {
@@ -8,6 +9,11 @@ public class Location {
 	}
 	
 	public Location(String location) {
+		this.location = location;
+	}
+	
+	public Location(int locationId, String location) {
+		this.locationId = locationId;
 		this.location = location;
 	}
 	

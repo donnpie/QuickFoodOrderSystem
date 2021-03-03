@@ -35,5 +35,9 @@ public class MealLineItem {
 		result += this.quantity;
 		return result;
 	}
+
+	public int GetId() {
+		return this.meal.GetId();
+	}
 	
 }

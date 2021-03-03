@@ -1,8 +1,8 @@
 package main;
 
 public class Meal {
-	private String name;
 	private int id;
+	private String name;
 	private double price;
 	
 	

@@ -15,7 +15,9 @@ public class CustomerList {
 	}
 	
 	public Customer GetCustomerBy(int id) {
-		//Find and returns customer by id
+		/**
+		 * Find and return customer by CustomerId
+		 */
 		for (int i = 0; i < list.size(); i++) {
 			Customer c = list.get(i);
 			if (c.GetId() == id) {
@@ -45,6 +47,17 @@ public class CustomerList {
 			result += list.get(i).toString() + "\n";
 		}
 		return result;
+	}
+	
+	public int size() {
+		return list.size();
+	}
+
+	public int GetId(int i) {
+		/**
+		 * Return the id for customer at index position i
+		 */
+		return list.get(i).GetId();
 	}
 	
 	//Later should add the following:

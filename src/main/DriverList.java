@@ -10,8 +10,10 @@ public class DriverList {
 	}
 	
 	public Driver PickDriverInAreaWithLowestNumberOfOrders(Restaurant restaurant) {
-		//Returns the best driver for the given restaurant
-		//Returns null if no suitable driver found
+		/**
+		 * Returns the best driver for the given restaurant
+		 * Returns null if no suitable driver found
+		 */
 	
 		ArrayList<Driver> shortList = new ArrayList<Driver>();
 		Driver driverWithLowestDeliveries = null;

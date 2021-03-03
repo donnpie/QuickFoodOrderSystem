@@ -9,6 +9,18 @@ public class MealList {
 		list.add(mli);
 	}
 	
+	
+	public int size() {
+		return list.size();
+	}
+	
+	public int GetId(int i) {
+		/**
+		 * Return the id for restaurant at index position i
+		 */
+		return list.get(i).GetId();
+	}
+	
 	public String toString() {
 		//returns a string representing all MealLineItem objects
 		String result = new String();

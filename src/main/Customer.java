@@ -31,6 +31,16 @@ public class Customer {
 		this.suburb = suburb;
 	}
 	
+	public Customer(String name, String telNumber, String email, String streetAddress, String suburb, Location location, int id) {
+		this.name = name;
+		this.telNumber = telNumber;
+		this.email = email;
+		this.location = location;
+		this.id = id;
+		this.streetAddress = streetAddress;
+		this.suburb = suburb;
+	}
+	
 	public int GetId() {
 		return id;
 	}
@@ -58,6 +68,7 @@ public class Customer {
 	public String getSuburb() {
 		return suburb;
 	}
+
 	
 	//Comparator for sorting by Customer location
 	public static Comparator<Customer> custLocationComparator = new Comparator<Customer>() {
@@ -86,6 +97,10 @@ public class Customer {
 		//returns a string representing the Customer object
 		String result = new String(this.id + ", ");
 		result += this.name + ", ";
+		result += this.telNumber + ", ";
+		result += this.email + ", ";
+		result += this.streetAddress + ", ";
+		result += this.suburb + ", ";
 		result += this.location.toString();
 		return result;
 	}

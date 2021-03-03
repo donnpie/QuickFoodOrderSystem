@@ -33,6 +33,18 @@ public class RestaurantList {
 		return result;
 	}
 	
+	
+	public int size() {
+		return list.size();
+	}
+	
+	public int GetId(int i) {
+		/**
+		 * Return the id for restaurant at index position i
+		 */
+		return list.get(i).GetId();
+	}
+	
 	//Later add the following:
 	//Remove restaurant
 	
