@@ -1,7 +1,20 @@
 package main;
 
 import java.util.Scanner;
-
+/**
+ * Provides a console based application to run the Quick Food Order System.
+ * The following functionality is provided:
+ * - Create a new order
+ * - Find an existing customer
+ * - Create a new customer
+ * - Update an existing customer
+ * - Find incomplete orders
+ * - Finalise an order
+ * - Find an existing order
+ * 
+ * @author donnp
+ * 
+ */
 public class Program {
 	/**
 	 * Run the main program loop.
@@ -40,6 +53,10 @@ public class Program {
 						validOptionSelected = true;
 						FinaliseOrder();
 						break;
+					case 7: 
+						validOptionSelected = true;
+						FindOrder();
+						break;
 				default:
 					validOptionSelected = false;
 				}
@@ -50,24 +67,10 @@ public class Program {
 			} while(result != 'y' && result != 'n');
 		} while(result == 'y');
 		
-		///TODO: change to data base queries
-//		System.out.println("Here is a summary of all orders:");
-//		orderList.SortByCustomerName();
-//		System.out.println(orderList.nameAndNumToString()); //Should print names in alpha order followed by order numbers
-//		IOHandler.WriteToFile(orderList.nameAndNumToString(), orderFile);	//Write names and nums to file
-//		
-//		System.out.println("Here is a summary of customers by location (Includes customers with no orders):");
-//		customerList.SortByCustomerLocation();
-//		System.out.println(customerList.locationAndNameToString()); 
-//		IOHandler.WriteToFile(customerList.locationAndNameToString(), customerFile);	//Write to file
-//		
-//		System.out.println("Here is a summary of drivers with updated loads:"); //Default sort order
-//		System.out.println(driverList.toString()); 
-//		IOHandler.WriteToFile(driverList.toString(), driverFile);	//Write to file
-		
 		System.out.println("Goodbye!");
 		
 	}//main
+
 
 	/**
 	 * Display welcome message when program is started
@@ -102,8 +105,9 @@ public class Program {
 		System.out.println("2. Find existing customer");
 		System.out.println("3. Create new customer");
 		System.out.println("4. Update existing customer");
-		System.out.println("5. Find imcomplete orders");
+		System.out.println("5. Find incomplete orders");
 		System.out.println("6. Finalise order");
+		System.out.println("7. Find existing order");
 	}
 	
 	/**
@@ -140,8 +144,7 @@ public class Program {
 			orderList.Add(order); //Add the order to the order list
 			System.out.println("Here is a summary of your order:");
 			System.out.println(order.toString());
-			//Write invoice text to file
-			IOHandler.WriteToFile(order.toString(), "../invoice "+ order.GetOrderNumber()+".txt");						
+					
 		} else {
 			System.out.println("Sorry, there are no drivers in this area, cannot process order.");
 		}
@@ -263,15 +266,54 @@ public class Program {
 	 * Find orders for which the completion status is 0 (incomplete)
 	 */
 	private static void FindIncompleteOrders() {
-		// TODO Auto-generated method stub
-		System.out.println("simulating FindIncompleteOrders...");
+		
+		//Find the incomplete orders and print details
+		OrderList list = IOHandler.GetIncompleteOrders();
+		System.out.println("Incomplete orders: ");
+		System.out.println(list.summaryToString());
 	}
 	
 	/**
 	 * Sets the completion status to complete and sets the completion date to current date for given order
 	 */
 	private static void FinaliseOrder() {
-		// TODO Auto-generated method stub
-		System.out.println("simulating FinaliseOrder...");
+		
+		//Ask user for orderId of order to be completed
+		System.out.println("Enter id of order to be completed: ");
+		int id = IOHandler.GetNumberFromUser();
+		
+		//Find the order and print current details
+		GetOrderById(id);
+
+		//Write new details to db
+		if (IOHandler.UpdateOrderComplete(id)) {
+			System.out.println("Order has been marked as completed");
+		} else {
+			System.out.println("Error: Order could not be marked as completed");
+		}
+	}
+
+	/**
+	 * Returns an Order specified by the given orderId
+	 * @param id the orderId of the order
+	 * @return {@code Order} object
+	 */
+	private static Order GetOrderById(int id) {
+		Order order = IOHandler.GetOrderById(id);
+		System.out.println("Current details for this order: ");
+		System.out.println(order.summaryToString());
+		return order;
+	}
+	
+	/**
+	 * Returns the details of the specified order
+	 */
+	private static void FindOrder() {
+		//Ask user for orderId
+		System.out.println("Enter id of order: ");
+		int id = IOHandler.GetNumberFromUser();
+		
+		GetOrderById(id);
+		
 	}
 }//public class Program

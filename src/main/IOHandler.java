@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.Scanner;
 /**
@@ -15,6 +17,11 @@ import java.util.Scanner;
  */
 public class IOHandler {
 	
+	/**
+	 * Sets up a connection to the database
+	 * @return {@code Connection} object
+	 * @throws SQLException
+	 */
 	public static Connection getConnection() throws SQLException {
 		Connection connection = DriverManager.getConnection(
 				 "jdbc:sqlserver://localhost;database=QuikFoodMS",
@@ -24,14 +31,21 @@ public class IOHandler {
 		return connection;
 	}
 	
+	/**
+	 * Returns a SQL {@code Statement} object
+	 * Use IO Handler.Connection method to created the connection parameter
+	 * @param connection 
+	 * @throws SQLException
+	 */
 	public static Statement createStatement(Connection connection)  throws SQLException {
 		return connection.createStatement();
 	}
 	
+	/**
+	 * Queries the database to retrieve a list of customer objects.
+	 * @return
+	 */
 	public static CustomerList MakeCustomerList() {
-		/**
-		 * Queries the database to retrieve a list of customer objects.
-		 */
 		//Create empty list
 		CustomerList customerList = new CustomerList();
 		try {
@@ -87,10 +101,10 @@ public class IOHandler {
 		return customerList;
 	}
 
+	/**
+	 * Queries the database to retrieve a list of restaurant objects.
+	 */
 	public static RestaurantList MakeRestaurantList() {
-		/**
-		 * Queries the database to retrieve a list of restaurant objects.
-		 */
 		//Create empty list
 		RestaurantList restaurantList = new RestaurantList();
 		try {
@@ -128,11 +142,10 @@ public class IOHandler {
 		return restaurantList;
 	}
 	
-	
+	/**
+	 * Queries the database to retrieve a list of driver objects.
+	 */
 	public static DriverList MakeDriverList() {
-		/**
-		 * Queries the database to retrieve a list of driver objects.
-		 */
 		//Create empty list
 		DriverList driverList = new DriverList();
 		try {
@@ -170,10 +183,10 @@ public class IOHandler {
 		return driverList;
 	}
 	
+	/**
+	 * Send a request to the database to create a new order
+	 */
 	public static boolean SendOrderToDB(Order o) {
-		/**
-		 * Send a request to the database to create a new order
-		 */
 		try {
 			//Establish connection
 			Connection connection = IOHandler.getConnection();
@@ -207,10 +220,10 @@ public class IOHandler {
 	}
 	
 
+	/**
+	 * Add food to an existing order in the database
+	 */
 	public static boolean SendFoodOrderToDB(Order order) {
-		/**
-		 * Add food to an existing order in the database
-		 */
 		try {
 			//Establish connection
 			Connection connection = IOHandler.getConnection();
@@ -246,12 +259,12 @@ public class IOHandler {
 		return false;
 	}
 	
+	/**
+	 * Creates a menu for the given order.
+	 * The menu is bound to the restaurant of the order
+	 * Customer must choose meals from the menu
+	 */
 	public static void MakeMenu(Order order) {
-		/**
-		 * Creates a menu for the given order.
-		 * The menu is bound to the restaurant of the order
-		 * Customer must choose meals from the menu
-		 */
 		
 		//Get restaurant id
 		int restId = order.GetRestaurant().GetId();
@@ -293,10 +306,10 @@ public class IOHandler {
 		
 	}
 	
+	/**
+	 * Gets numerical input from user	
+	 */
 	public static int GetNumberFromUser() {
-		/**
-		 * Gets numerical input from user	
-		 */
 			Scanner s = new Scanner(System.in);
 			int result = 0;
 			while (s.hasNext()) {
@@ -307,10 +320,10 @@ public class IOHandler {
 			return result;
 	}
 	
+	/**
+	 * Gets string input from user	
+	 */
 	public static String GetNextLineFromUser() {
-		/**
-		 * Gets string input from user	
-		 */
 			Scanner s = new Scanner(System.in);
 			String result = "";
 			while (s.hasNextLine()) {
@@ -320,28 +333,11 @@ public class IOHandler {
 			//s.close(); //This line causes infinite loop - why???
 			return result;
 	}
-	
-	public static void WriteToFile(String inputText, String pathAndFileName) {
-		//Writes inputText to file
-		try {
-			Scanner scnr = new Scanner(inputText);
-			Formatter f1 = new Formatter(pathAndFileName);
-			while(scnr.hasNextLine()){
-				String nextLine = scnr.nextLine();
-				f1.format("%s", nextLine +"\r\n");
-				//System.out.println("nextLine: " + nextLine);
-			}  
-			f1.close(); 
-			scnr.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("Error: File was not found. " + e.getMessage());
-		}
-	}
 
+	/**
+	 * Queries the database to retrieve the id of the last order
+	 */
 	public static int GetLastOrderNumber() {
-		/**
-		 * Queries the database to retrieve a list of driver objects.
-		 */
 		//Create empty list
 		int lastOrderNumber = 0;
 		try {
@@ -371,10 +367,10 @@ public class IOHandler {
 		return lastOrderNumber;
 	}
 	
+	/**
+	 * Queries the database to retrieve a customer with the specified id
+	 */
 	public static Customer GetCustomerById(int id) {
-		/**
-		 * Queries the database to retrieve a customer with the specified id
-		 */
 		//Create empty list
 		Customer c = null;
 		try {
@@ -431,11 +427,12 @@ public class IOHandler {
 		return c;
 	}
 
+	/**
+	 * Check if the given location is valid and returns the corresponding locationId
+	 * Returns 0 if the location is not valid
+	 * Caller must handle invalid locations
+	 */
 	public static int GetLocationId(String location) {
-		/**
-		 * Check if the given location is valid and returns the corresponding locationId
-		 * Returns 0 if the location is not valid
-		 */
 		//Create empty list
 				int locationId = 0;
 				try {
@@ -465,11 +462,11 @@ public class IOHandler {
 				return locationId;
 	}
 
+	/**
+	 * Add food to an existing order in the database
+	 */
 	public static boolean AddNewCustomer(String name, String contactNumber, String email, String streetAddress,
 			String suburb, int locationId) {
-		/**
-		 * Add food to an existing order in the database
-		 */
 		try {
 			//Establish connection
 			Connection connection = IOHandler.getConnection();
@@ -504,11 +501,11 @@ public class IOHandler {
 		return false;
 	}
 
+	/**
+	 * Update an existing customer in the database
+	 */
 	public static boolean UpdateCustomer(int customerId, String name, String contactNumber, String email, String streetAddress,
 			String suburb, int locationId) {
-		/**
-		 * Update an existing customer in the database
-		 */
 		try {
 			//Establish connection
 			Connection connection = IOHandler.getConnection();
@@ -537,17 +534,220 @@ public class IOHandler {
 		return false;
 	}
 
-	
-	
+	/**
+	 * Returns a list of orders where the orders are incomplete
+	 * @return {@code OrderList} object containing incomplete orders
+	 */
+	public static OrderList GetIncompleteOrders() {
+		//Create empty list
+		OrderList list = new OrderList();
+		try {
+			//Establish connection
+			Connection connection = IOHandler.getConnection();
+			Statement statement = IOHandler.createStatement(connection);
+			
+			//Get list from DB
+			ResultSet results = statement.executeQuery("SELECT\r\n"
+					+ "	o.orderId\r\n"
+					+ "	,o.specialInstructions\r\n"
+					+ "	,c.customerID\r\n"
+					+ "	,c.name AS custName\r\n"
+					+ "	,c.contactNumber AS custContactNum\r\n"
+					+ "	,c.email\r\n"
+					+ "	,c.streetAddress\r\n"
+					+ "	,c.suburb\r\n"
+					+ "	,c.locationId AS custLocationId\r\n"
+					+ "	,cl.name AS custLocationName\r\n"
+					+ "	,r.restaurantId\r\n"
+					+ "	,r.name AS restName\r\n"
+					+ "	,r.contactNumber AS restContactNum\r\n"
+					+ "	,r.locationId AS restLocationId\r\n"
+					+ "	,rl.name AS restLocationName\r\n"
+					+ "	,d.driverId\r\n"
+					+ "	,d.name AS driverName\r\n"
+					+ "	,d.numOfDeliveries\r\n"
+					+ "	,d.locationId AS driverLocationId\r\n"
+					+ "	,dl.name AS driverLocationName\r\n"
+					+ "FROM [Order] AS o INNER JOIN Customer AS c ON o.customerId = c.customerID\r\n"
+					+ "	INNER JOIN Restaurant AS r ON o.restaurantId = r.restaurantId\r\n"
+					+ "	INNER JOIN Driver AS d ON o.driverId = d.driverId\r\n"
+					+ "	INNER JOIN Location AS cl ON c.locationId = cl.locationId\r\n"
+					+ "	INNER JOIN Location AS rl ON c.locationId = rl.locationId\r\n"
+					+ "	INNER JOIN Location AS dl ON c.locationId = dl.locationId\r\n"
+					+ "WHERE  isComplete is NULL OR isComplete = 0");
+			
+			//Loop through results, create new object and add to list
+			 while (results.next()) {
+				 Location custLoc = new Location(results.getInt("custLocationId"), 
+						 results.getString("custLocationName"));
+				 Customer c = new Customer(results.getString("custName"), 
+						 results.getString("custContactNum"), 
+						 results.getString("email"), 
+						 results.getString("streetAddress"), 
+						 results.getString("suburb"),
+						 custLoc, 
+						 results.getInt("customerID"));
+				 Location restLoc = new Location(results.getInt("restLocationId"),
+						 results.getString("restLocationName"));
+				 Restaurant r = new Restaurant(results.getString("restName"), 
+						 results.getString("restContactNum"), 
+						 restLoc, 
+						 results.getInt("restLocationId"));
+				 Location driverLoc = new Location(results.getInt("driverLocationId"),
+						 results.getString("driverLocationName"));
+				 Driver d = new Driver(results.getString("driverName"), 
+						 driverLoc, 
+						 results.getInt("numOfDeliveries"), 
+						 results.getInt("driverId"));
+				 Order o = new Order(results.getInt("orderId"), 
+						 results.getString("specialInstructions"), 
+						 c, 
+						 r, 
+						 d);
+				 list.Add(o);
+			 }
+					
+			// Close connections
+			results.close();
+			statement.close();
+			connection.close();
+			//System.out.println("Query successful");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		//System.out.println(driverList.toString());
+		return list;
+	}
+
+	/**
+	 * Returns order specified by orderId
+	 * @param id the id of the order to be returned
+	 * @return {@code Order} object
+	 */
+	public static Order GetOrderById(int id) {
+		//Create empty list
+				Order o = null;
+				try {
+					//Establish connection
+					Connection connection = IOHandler.getConnection();
+					Statement statement = IOHandler.createStatement(connection);
+					
+					//Get data from DB
+					ResultSet results = statement.executeQuery("SELECT\r\n"
+							+ "	o.orderId\r\n"
+							+ "	,o.specialInstructions\r\n"
+							+ "	,o.isComplete\r\n"
+							+ "	,o.completionDate\r\n"
+							+ "	,c.customerID\r\n"
+							+ "	,c.name AS custName\r\n"
+							+ "	,c.contactNumber AS custContactNum\r\n"
+							+ "	,c.email\r\n"
+							+ "	,c.streetAddress\r\n"
+							+ "	,c.suburb\r\n"
+							+ "	,c.locationId AS custLocationId\r\n"
+							+ "	,cl.name AS custLocationName\r\n"
+							+ "	,r.restaurantId\r\n"
+							+ "	,r.name AS restName\r\n"
+							+ "	,r.contactNumber AS restContactNum\r\n"
+							+ "	,r.locationId AS restLocationId\r\n"
+							+ "	,rl.name AS restLocationName\r\n"
+							+ "	,d.driverId\r\n"
+							+ "	,d.name AS driverName\r\n"
+							+ "	,d.numOfDeliveries\r\n"
+							+ "	,d.locationId AS driverLocationId\r\n"
+							+ "	,dl.name AS driverLocationName\r\n"
+							+ "FROM [Order] AS o INNER JOIN Customer AS c ON o.customerId = c.customerID\r\n"
+							+ "	INNER JOIN Restaurant AS r ON o.restaurantId = r.restaurantId\r\n"
+							+ "	INNER JOIN Driver AS d ON o.driverId = d.driverId\r\n"
+							+ "	INNER JOIN Location AS cl ON c.locationId = cl.locationId\r\n"
+							+ "	INNER JOIN Location AS rl ON c.locationId = rl.locationId\r\n"
+							+ "	INNER JOIN Location AS dl ON c.locationId = dl.locationId\r\n"
+							+ "WHERE  orderId = " + id);
+					
+					//Loop through results, create new customer object and add to list
+					 while (results.next()) {
+						 Location custLoc = new Location(results.getInt("custLocationId"), 
+								 results.getString("custLocationName"));
+						 Customer c = new Customer(results.getString("custName"), 
+								 results.getString("custContactNum"), 
+								 results.getString("email"), 
+								 results.getString("streetAddress"), 
+								 results.getString("suburb"),
+								 custLoc, 
+								 results.getInt("customerID"));
+						 Location restLoc = new Location(results.getInt("restLocationId"),
+								 results.getString("restLocationName"));
+						 Restaurant r = new Restaurant(results.getString("restName"), 
+								 results.getString("restContactNum"), 
+								 restLoc, 
+								 results.getInt("restLocationId"));
+						 Location driverLoc = new Location(results.getInt("driverLocationId"),
+								 results.getString("driverLocationName"));
+						 Driver d = new Driver(results.getString("driverName"), 
+								 driverLoc, 
+								 results.getInt("numOfDeliveries"), 
+								 results.getInt("driverId"));
+						 boolean isComplete = results.getInt("isComplete") == 1 ? true : false;
+						 
+						 o = new Order(results.getInt("orderId"), 
+								 results.getString("specialInstructions"), 
+								 c, 
+								 r, 
+								 d,
+								 isComplete,
+								 results.getString("completionDate"));
+					 }
+							
+					// Close connections
+					results.close();
+					statement.close();
+					connection.close();
+					//System.out.println("Query successful");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				//System.out.println(driverList.toString());
+				return o;
+	}
+
+	/**
+	 * Sets isComplete to true
+	 * Sets completionDate to current date
+	 * @param id id of the order to be completed
+	 * @return true if order was completed successfully, false otherwise
+	 */
+	public static boolean UpdateOrderComplete(int id) {
+
+		try {
+			//Establish connection
+			Connection connection = IOHandler.getConnection();
+			Statement statement = IOHandler.createStatement(connection);
+			
+			//Create date string
+			Date date = new Date();
+			int year = date.getYear() + 1900;
+			int month = date.getMonth() + 1;
+			int day = date.getDay();
+			String dateString = new String(year + "-" + month + "-" + day);
+			//System.out.println("Date: " + dateString)
+			
+			//Write data to db
+			statement.executeUpdate("UPDATE [Order]"
+					+ "			   SET "
+					+ "			      isComplete = 1"
+					+ "			      ,completionDate = '"+dateString+"'"
+					+ "			 WHERE orderId = " + id
+					);
+			
+					
+			// Close connections
+			statement.close();
+			connection.close();
+			//System.out.println("Query successful");
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 }
-
-//Rough work
-//
-//while (s.hasNextLine()) {
-
-	
-	
-	//find the first comma
-	//int firstComma = line.indexOf(line);
-	//String name = 
-

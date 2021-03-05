@@ -1,5 +1,10 @@
 package main;
-
+/**
+ * The class {@code MealLineItem} provides a concrete implementation for a MealLineItem object.
+ * A MealLineItem represents one line on an invoice, consisting of a meal and a quantity
+ * @author donnp
+ *
+ */
 public class MealLineItem {
 	Meal meal;
 	int quantity;
@@ -20,8 +25,11 @@ public class MealLineItem {
 		return quantity;
 	}
 	
+	/**
+	 * Returns the unit price of a MealLineItem
+	 * @return
+	 */
 	public double GetPrice() {
-		//Returns the unit price of a MealLineItem
 		return meal.GetPrice();
 	}
 
@@ -29,8 +37,10 @@ public class MealLineItem {
 		return quantity * meal.GetPrice();
 	}
 	
+	/**
+	 * Returns a string representing the driver object
+	 */
 	public String toString() {
-		//returns a string representing the driver object
 		String result = new String(this.meal.toString() + ", ");
 		result += this.quantity;
 		return result;
